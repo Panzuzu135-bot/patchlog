@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import type { Database } from '@/types/supabase'
 import Link from 'next/link'
 
@@ -27,11 +28,12 @@ function relativeTime(dateStr: string): string {
 export default async function FeedPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
   const { data: followedProjects } = await supabase
     .from('follows')
     .select('project_id')
-    .eq('user_id', user!.id)
+    .eq('user_id', user.id)
 
   const followedIds = followedProjects?.map((f) => f.project_id) ?? []
 

@@ -309,8 +309,19 @@ describe('togglePublish', () => {
     expect(result).toEqual({ error: 'No encontrado' })
   })
 
+  it('devuelve error si el usuario no es el dueño de la entrada', async () => {
+    const entryChain = makeSelectChain({ data: { id: 'entry-1', projects: { user_id: 'otro' } }, error: null })
+    mockCreateClient.mockResolvedValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'u1' } } }) },
+      from: vi.fn().mockReturnValue(entryChain),
+    } as any)
+
+    const result = await togglePublish('entry-1', false, 'mi-proyecto')
+    expect(result).toEqual({ error: 'No tienes permiso para modificar esta entrada' })
+  })
+
   it('devuelve error si Supabase falla al actualizar', async () => {
-    const entryChain = makeSelectChain({ data: { id: 'entry-1' }, error: null })
+    const entryChain = makeSelectChain({ data: { id: 'entry-1', projects: { user_id: 'u1' } }, error: null })
     const updateChain = makeMutationChain({ data: null, error: { message: 'db error' } })
     const mockFrom = vi.fn()
       .mockReturnValueOnce(entryChain)
@@ -326,7 +337,7 @@ describe('togglePublish', () => {
   })
 
   it('actualiza published a true cuando estaba en false', async () => {
-    const entryChain = makeSelectChain({ data: { id: 'entry-1' }, error: null })
+    const entryChain = makeSelectChain({ data: { id: 'entry-1', projects: { user_id: 'u1' } }, error: null })
     const updateChain = makeMutationChain({ data: {}, error: null })
     const mockFrom = vi.fn()
       .mockReturnValueOnce(entryChain)
@@ -344,7 +355,7 @@ describe('togglePublish', () => {
   })
 
   it('actualiza published a false cuando estaba en true', async () => {
-    const entryChain = makeSelectChain({ data: { id: 'entry-1' }, error: null })
+    const entryChain = makeSelectChain({ data: { id: 'entry-1', projects: { user_id: 'u1' } }, error: null })
     const updateChain = makeMutationChain({ data: {}, error: null })
     const mockFrom = vi.fn()
       .mockReturnValueOnce(entryChain)
@@ -388,8 +399,19 @@ describe('deleteEntry', () => {
     expect(result).toEqual({ error: 'No encontrado' })
   })
 
+  it('devuelve error si el usuario no es el dueño de la entrada', async () => {
+    const entryChain = makeSelectChain({ data: { id: 'entry-1', projects: { user_id: 'otro' } }, error: null })
+    mockCreateClient.mockResolvedValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'u1' } } }) },
+      from: vi.fn().mockReturnValue(entryChain),
+    } as any)
+
+    const result = await deleteEntry('entry-1', 'mi-proyecto')
+    expect(result).toEqual({ error: 'No tienes permiso para borrar esta entrada' })
+  })
+
   it('devuelve error si Supabase falla al borrar', async () => {
-    const entryChain = makeSelectChain({ data: { id: 'entry-1' }, error: null })
+    const entryChain = makeSelectChain({ data: { id: 'entry-1', projects: { user_id: 'u1' } }, error: null })
     const deleteChain = makeMutationChain({ data: null, error: { message: 'db error' } })
     const mockFrom = vi.fn()
       .mockReturnValueOnce(entryChain)
@@ -405,7 +427,7 @@ describe('deleteEntry', () => {
   })
 
   it('revalida la lista del proyecto en caso de éxito', async () => {
-    const entryChain = makeSelectChain({ data: { id: 'entry-1' }, error: null })
+    const entryChain = makeSelectChain({ data: { id: 'entry-1', projects: { user_id: 'u1' } }, error: null })
     const deleteChain = makeMutationChain({ data: {}, error: null })
     const mockFrom = vi.fn()
       .mockReturnValueOnce(entryChain)

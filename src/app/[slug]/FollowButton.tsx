@@ -27,10 +27,15 @@ export default function FollowButton({
     setCount((c) => c + (nextFollowing ? 1 : -1))
 
     startTransition(async () => {
-      if (nextFollowing) {
-        await followProject(projectId, slug)
-      } else {
-        await unfollowProject(projectId, slug)
+      try {
+        if (nextFollowing) {
+          await followProject(projectId, slug)
+        } else {
+          await unfollowProject(projectId, slug)
+        }
+      } catch {
+        setFollowing(!nextFollowing)
+        setCount((c) => c - (nextFollowing ? 1 : -1))
       }
     })
   }

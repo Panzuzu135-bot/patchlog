@@ -144,7 +144,7 @@ export default async function ProjectChangelogPage({
         )}
         {entries?.map((entry) => {
           const badge = BADGE[entry.type]
-          const html = DOMPurify.sanitize(marked.parse(entry.content) as string)
+          const html = DOMPurify.sanitize(marked.parse(entry.content, { async: false }))
 
           return (
             <article

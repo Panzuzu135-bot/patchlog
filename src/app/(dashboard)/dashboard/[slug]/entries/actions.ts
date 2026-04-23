@@ -95,10 +95,13 @@ export async function togglePublish(entryId: string, currentPublished: boolean, 
     .from('changelog_entries')
     .select('id, projects!inner(user_id)')
     .eq('id', entryId)
-    .eq('projects.user_id', user.id)
     .single()
 
   if (!entry) return { error: 'No encontrado' }
+
+  const projects = entry.projects as unknown as { user_id: string } | { user_id: string }[]
+  const owner = Array.isArray(projects) ? projects[0] : projects
+  if (owner.user_id !== user.id) return { error: 'No tienes permiso para modificar esta entrada' }
 
   const { error } = await supabase
     .from('changelog_entries')
@@ -119,10 +122,13 @@ export async function deleteEntry(entryId: string, slug: string) {
     .from('changelog_entries')
     .select('id, projects!inner(user_id)')
     .eq('id', entryId)
-    .eq('projects.user_id', user.id)
     .single()
 
   if (!entry) return { error: 'No encontrado' }
+
+  const projects = entry.projects as unknown as { user_id: string } | { user_id: string }[]
+  const owner = Array.isArray(projects) ? projects[0] : projects
+  if (owner.user_id !== user.id) return { error: 'No tienes permiso para borrar esta entrada' }
 
   const { error } = await supabase
     .from('changelog_entries')
