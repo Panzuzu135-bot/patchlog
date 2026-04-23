@@ -26,6 +26,12 @@ export default async function DashboardLayout({
         </div>
 
         <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
+          <Link
+            href="/feed"
+            className="flex items-center rounded-md px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
+          >
+            Feed
+          </Link>
           <p className="px-2 pt-3 pb-1 text-xs font-medium text-zinc-400 uppercase tracking-wider">
             Proyectos
           </p>

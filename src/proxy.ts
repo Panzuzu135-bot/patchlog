@@ -5,7 +5,7 @@ export async function proxy(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request)
   const { pathname } = request.nextUrl
 
-  if (pathname.startsWith('/dashboard') && !user) {
+  if ((pathname.startsWith('/dashboard') || pathname.startsWith('/feed')) && !user) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
