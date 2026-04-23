@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Patchlog
 
-## Getting Started
+Patchlog es una web donde los desarrolladores publican el progreso de sus proyectos mediante entradas de changelog versionadas. Los seguidores las leen en su feed personal y nunca se pierden una novedad.
 
-First, run the development server:
+## Qué es Patchlog
+
+- Los **desarrolladores** crean proyectos, publican entradas de changelog con versión y tipo (feature, fix, mejora, breaking, seguridad) y gestionan todo desde su dashboard.
+- Los **seguidores** visitan la página pública de cada proyecto y pueden seguirlo para recibir sus actualizaciones en un feed personal.
+
+No es un widget embebible ni una aplicación de terceros — es una web autónoma orientada a la información.
+
+## Stack
+
+- **Next.js 16** (App Router) + **TypeScript** + **Tailwind CSS v4**
+- **Supabase** — PostgreSQL, autenticación OAuth (GitHub) y RLS
+- **Stripe** — planes free/pro *(pendiente)*
+
+## Rutas principales
+
+| Ruta | Descripción |
+|------|-------------|
+| `/` | Landing page pública |
+| `/login` | Autenticación con GitHub OAuth |
+| `/dashboard` | Panel del desarrollador — lista de proyectos |
+| `/dashboard/new` | Crear proyecto |
+| `/dashboard/[slug]` | Entradas de changelog del proyecto |
+| `/dashboard/[slug]/settings` | Configuración del proyecto |
+| `/feed` | Feed personal del seguidor (autenticado) |
+| `/[slug]` | Página pública del changelog de un proyecto |
+| `/settings` | Perfil del usuario |
+
+## Desarrollo local
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La aplicación arranca en [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Variables de entorno necesarias (crear `.env.local`):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
 
-## Learn More
+## Tests
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm test
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Suite de tests unitarios con Vitest sobre las Server Actions. No se usan mocks de la base de datos — los tests validan el comportamiento real de las actions con mocks de Supabase a nivel de cliente.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Base de datos
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Las migraciones están en `supabase/migrations/` y se aplican en orden. Tablas principales: `profiles`, `projects`, `changelog_entries`, `follows`.
