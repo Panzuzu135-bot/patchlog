@@ -11,51 +11,45 @@ interface FollowButtonProps {
 }
 
 export default function FollowButton({
-  projectId,
-  slug,
-  initialFollowing,
-  initialCount,
-  accentColor,
+  projectId, slug, initialFollowing, initialCount, accentColor,
 }: FollowButtonProps) {
   const [following, setFollowing] = useState(initialFollowing)
   const [count, setCount] = useState(initialCount)
   const [isPending, startTransition] = useTransition()
 
   function handleClick() {
-    const nextFollowing = !following
-    setFollowing(nextFollowing)
-    setCount((c) => c + (nextFollowing ? 1 : -1))
-
+    const next = !following
+    setFollowing(next)
+    setCount(c => c + (next ? 1 : -1))
     startTransition(async () => {
       try {
-        if (nextFollowing) {
-          await followProject(projectId, slug)
-        } else {
-          await unfollowProject(projectId, slug)
-        }
+        if (next) await followProject(projectId, slug)
+        else await unfollowProject(projectId, slug)
       } catch {
-        setFollowing(!nextFollowing)
-        setCount((c) => c - (nextFollowing ? 1 : -1))
+        setFollowing(!next)
+        setCount(c => c - (next ? 1 : -1))
       }
     })
   }
 
+  const bg = accentColor.startsWith('var(') ? 'var(--accent)' : accentColor
+
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-xs text-zinc-400">
-        {count} {count === 1 ? 'seguidor' : 'seguidores'}
-      </span>
-      <button
-        onClick={handleClick}
-        disabled={isPending}
-        className="rounded-md px-4 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-        style={{
-          backgroundColor: accentColor,
-          opacity: following ? 0.75 : undefined,
-        }}
-      >
+    <button
+      onClick={handleClick}
+      disabled={isPending}
+      className="inline-flex items-center rounded-lg overflow-hidden font-semibold text-[13px] transition-all hover:brightness-110 disabled:opacity-60 shrink-0"
+      style={{ border: `1px solid ${bg}`, opacity: following ? 0.8 : 1 }}
+    >
+      <span className="px-3 py-1.5" style={{ background: bg, color: 'var(--accent-fg)' }}>
         {following ? 'Siguiendo' : 'Seguir'}
-      </button>
-    </div>
+      </span>
+      <span
+        className="px-2.5 py-1.5 font-mono text-xs"
+        style={{ background: 'var(--bg-elev)', color: bg, borderLeft: `1px solid ${bg}` }}
+      >
+        {count}
+      </span>
+    </button>
   )
 }

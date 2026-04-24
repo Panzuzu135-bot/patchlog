@@ -1,100 +1,57 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
+import TopNav from './TopNav'
+import SidebarNav from './SidebarNav'
 
-export default async function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: projects }, { data: profile }] = await Promise.all([
-    supabase.from('projects').select('name, slug').order('created_at', { ascending: true }),
+  const [{ data: projects }, { data: profile }, { data: follows }] = await Promise.all([
+    supabase.from('projects').select('id, name, slug, brand_color').eq('user_id', user.id).order('created_at', { ascending: true }),
     supabase.from('profiles').select('full_name, avatar_url').eq('id', user.id).single(),
+    supabase.from('follows').select('project_id').eq('user_id', user.id),
   ])
 
+  const entryCounts: Record<string, number> = {}
+  if (projects && projects.length > 0) {
+    const results = await Promise.all(
+      projects.map(p =>
+        supabase.from('changelog_entries').select('*', { count: 'exact', head: true }).eq('project_id', p.id)
+      )
+    )
+    projects.forEach((p, i) => { entryCounts[p.id] = results[i].count ?? 0 })
+  }
+
+  let feedCount = 0
+  if (follows && follows.length > 0) {
+    const ids = follows.map(f => f.project_id)
+    const { count } = await supabase
+      .from('changelog_entries')
+      .select('*', { count: 'exact', head: true })
+      .in('project_id', ids)
+      .eq('published', true)
+    feedCount = count ?? 0
+  }
+
+  const projectsWithCounts = (projects ?? []).map(p => ({ ...p, entryCount: entryCounts[p.id] ?? 0 }))
+  const userInitial = (profile?.full_name ?? user.email ?? '?')[0].toUpperCase()
+
   return (
-    <div className="flex h-screen bg-zinc-50">
-      <aside className="w-60 shrink-0 flex flex-col border-r border-zinc-200 bg-white">
-        <div className="px-4 py-4 border-b border-zinc-200">
-          <Link href="/dashboard" className="text-base font-bold text-zinc-900 hover:text-zinc-700">
-            Patchlog
-          </Link>
-        </div>
-
-        <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
-          <Link
-            href="/feed"
-            className="flex items-center rounded-md px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
-          >
-            Feed
-          </Link>
-          <p className="px-2 pt-3 pb-1 text-xs font-medium text-zinc-400 uppercase tracking-wider">
-            Proyectos
-          </p>
-          {projects?.map((project) => (
-            <Link
-              key={project.slug}
-              href={`/dashboard/${project.slug}`}
-              className="flex items-center rounded-md px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
-            >
-              {project.name}
-            </Link>
-          ))}
-          {projects?.length === 0 && (
-            <p className="px-2 py-1.5 text-sm text-zinc-400 italic">Sin proyectos</p>
-          )}
-          <Link
-            href="/dashboard/new"
-            className="flex items-center rounded-md px-2 py-1.5 text-sm text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors"
-          >
-            + Nuevo proyecto
-          </Link>
-        </nav>
-
-        <div className="p-2 border-t border-zinc-200 space-y-0.5">
-          <Link
-            href="/settings"
-            className="flex items-center rounded-md px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
-          >
-            Ajustes
-          </Link>
-          <form action="/auth/logout" method="POST">
-            <button
-              type="submit"
-              className="w-full text-left rounded-md px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
-            >
-              Cerrar sesión
-            </button>
-          </form>
-        </div>
-
-        {profile && (
-          <div className="px-3 py-3 border-t border-zinc-200 flex items-center gap-2">
-            {profile.avatar_url ? (
-              <img
-                src={profile.avatar_url}
-                alt={profile.full_name ?? ''}
-                className="h-7 w-7 rounded-full"
-              />
-            ) : (
-              <div className="h-7 w-7 rounded-full bg-zinc-200 flex items-center justify-center text-xs font-medium text-zinc-600">
-                {(profile.full_name ?? user.email ?? '?')[0].toUpperCase()}
-              </div>
-            )}
-            <span className="text-sm text-zinc-700 truncate">
-              {profile.full_name ?? user.email}
-            </span>
-          </div>
-        )}
-      </aside>
-
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
+    <div className="flex flex-col h-screen" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>
+      <TopNav projects={projectsWithCounts} />
+      <div className="flex flex-1 min-h-0">
+        <SidebarNav
+          projects={projectsWithCounts}
+          feedCount={feedCount}
+          profile={profile}
+          userInitial={userInitial}
+        />
+        <main className="flex-1 overflow-y-auto">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }

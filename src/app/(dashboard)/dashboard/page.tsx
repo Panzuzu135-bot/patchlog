@@ -1,6 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 
+function initials(name: string) {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -11,70 +15,98 @@ export default async function DashboardPage() {
     .eq('user_id', user!.id)
     .order('created_at', { ascending: true })
 
-  const counts: Record<string, number> = {}
+  const stats: Record<string, { entries: number; followers: number }> = {}
   if (projects && projects.length > 0) {
-    await Promise.all(
-      projects.map(async (project) => {
-        const { count } = await supabase
-          .from('changelog_entries')
-          .select('*', { count: 'exact', head: true })
-          .eq('project_id', project.id)
-          .eq('published', true)
-        counts[project.id] = count ?? 0
-      })
-    )
+    await Promise.all(projects.map(async p => {
+      const [{ count: entries }, { count: followers }] = await Promise.all([
+        supabase.from('changelog_entries').select('*', { count: 'exact', head: true }).eq('project_id', p.id),
+        supabase.from('follows').select('*', { count: 'exact', head: true }).eq('project_id', p.id),
+      ])
+      stats[p.id] = { entries: entries ?? 0, followers: followers ?? 0 }
+    }))
   }
 
+  const totalEntries = Object.values(stats).reduce((s, c) => s + c.entries, 0)
+
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-zinc-900">Mis proyectos</h1>
-        <Link
-          href="/dashboard/new"
-          className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
-        >
-          Nuevo proyecto
-        </Link>
+    <div className="p-8 max-w-[900px]">
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <p className="font-mono text-xs mb-1" style={{ color: 'var(--fg-faint)' }}>~ / proyectos</p>
+          <h1 className="text-[28px] font-bold tracking-tight">Mis proyectos</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--fg-muted)' }}>
+            {projects?.length ?? 0} proyectos · {totalEntries} entradas publicadas este mes
+          </p>
+        </div>
+        <div className="flex items-center gap-2 mt-1 shrink-0">
+          <span
+            className="inline-flex items-center font-medium text-[13px] px-3 py-1.5 rounded-lg"
+            style={{ background: 'var(--bg-elev)', color: 'var(--fg)', border: '1px solid var(--border)' }}
+          >
+            Importar desde GitHub
+          </span>
+          <Link
+            href="/dashboard/new"
+            className="inline-flex items-center font-semibold text-[13px] px-3 py-1.5 rounded-lg transition-all hover:brightness-110"
+            style={{ background: 'var(--accent)', color: 'var(--accent-fg)' }}
+          >
+            + Nuevo proyecto
+          </Link>
+        </div>
       </div>
 
       {projects && projects.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
+        <div className="flex flex-col gap-3">
+          {projects.map(p => (
             <Link
-              key={project.id}
-              href={`/dashboard/${project.slug}`}
-              className="group flex flex-col rounded-lg border border-zinc-200 bg-white overflow-hidden hover:border-zinc-300 hover:shadow-sm transition-all"
+              key={p.id}
+              href={`/dashboard/${p.slug}`}
+              className="block p-5 rounded-xl transition-opacity hover:opacity-90"
+              style={{
+                background: 'var(--bg-elev)',
+                border: '1px solid var(--border)',
+                borderLeft: `3px solid ${p.brand_color ?? 'var(--border)'}`,
+              }}
             >
-              <div className="h-2 w-full" style={{ backgroundColor: project.brand_color }} />
-              <div className="flex flex-col gap-1 p-5">
-                <span className="font-semibold text-zinc-900 group-hover:text-zinc-700 transition-colors">
-                  {project.name}
-                </span>
-                <span className="text-sm text-zinc-400">/{project.slug}</span>
-                {project.description && (
-                  <p className="mt-1 text-sm text-zinc-500 line-clamp-2">{project.description}</p>
-                )}
-                <span className="mt-3 text-xs text-zinc-400">
-                  {counts[project.id] === 1
-                    ? '1 entrada publicada'
-                    : `${counts[project.id] ?? 0} entradas publicadas`}
-                </span>
+              <div className="flex items-center gap-3 mb-3">
+                <div
+                  className="w-10 h-10 rounded-[8px] grid place-items-center font-mono font-bold text-sm shrink-0"
+                  style={{ background: p.brand_color ?? 'var(--accent)', color: 'var(--accent-fg)' }}
+                >
+                  {initials(p.name)}
+                </div>
+                <div>
+                  <p className="font-semibold text-[15px]" style={{ color: 'var(--fg)' }}>{p.name}</p>
+                  <p className="font-mono text-xs" style={{ color: 'var(--fg-subtle)' }}>/{p.slug}</p>
+                </div>
+              </div>
+              {p.description && (
+                <p className="text-sm mb-3" style={{ color: 'var(--fg-muted)' }}>{p.description}</p>
+              )}
+              <div
+                className="flex items-center gap-4 font-mono text-[12px] pt-3"
+                style={{ color: 'var(--fg-faint)', borderTop: '1px dashed var(--border)' }}
+              >
+                <span><strong style={{ color: 'var(--fg-muted)', fontWeight: 500 }}>{stats[p.id]?.entries ?? 0}</strong> entradas</span>
+                <span><strong style={{ color: 'var(--fg-muted)', fontWeight: 500 }}>{stats[p.id]?.followers ?? 0}</strong> siguiendo</span>
               </div>
             </Link>
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-zinc-200 bg-white py-20 text-center">
-          <div className="text-5xl mb-4">📋</div>
-          <h2 className="text-lg font-semibold text-zinc-900 mb-1">
-            Todavía no tienes proyectos
-          </h2>
-          <p className="text-sm text-zinc-500 mb-6 max-w-xs">
+        <div
+          className="flex flex-col items-center justify-center rounded-xl py-20 text-center"
+          style={{ border: '1px dashed var(--border)' }}
+        >
+          <p className="font-mono text-xs mb-4" style={{ color: 'var(--fg-faint)' }}>sin proyectos</p>
+          <h2 className="text-lg font-semibold mb-1">Todavía no tienes proyectos</h2>
+          <p className="text-sm mb-6 max-w-xs" style={{ color: 'var(--fg-muted)' }}>
             Crea tu primer proyecto y empieza a publicar tu changelog
           </p>
           <Link
             href="/dashboard/new"
-            className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+            className="inline-flex font-semibold text-[13px] px-3 py-1.5 rounded-lg hover:brightness-110"
+            style={{ background: 'var(--accent)', color: 'var(--accent-fg)' }}
           >
             Crear mi primer proyecto
           </Link>

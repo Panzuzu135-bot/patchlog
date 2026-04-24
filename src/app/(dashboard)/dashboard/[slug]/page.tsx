@@ -3,32 +3,23 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import EntryActions from './entries/EntryActions'
 
-const TYPE_LABELS: Record<string, string> = {
-  feature: 'Feature',
-  fix: 'Fix',
-  improvement: 'Improvement',
-  breaking: 'Breaking',
-  security: 'Security',
+const typeColor: Record<string, string> = {
+  feature: 'var(--t-feature)',
+  fix: 'var(--t-fix)',
+  improvement: 'var(--t-improvement)',
+  breaking: 'var(--t-breaking)',
+  security: 'var(--t-security)',
 }
 
-const TYPE_CLASSES: Record<string, string> = {
-  feature: 'bg-green-100 text-green-700',
-  fix: 'bg-red-100 text-red-700',
-  improvement: 'bg-blue-100 text-blue-700',
-  breaking: 'bg-orange-100 text-orange-700',
-  security: 'bg-purple-100 text-purple-700',
+function relTime(dateStr: string | null) {
+  if (!dateStr) return '—'
+  const days = (Date.now() - new Date(dateStr).getTime()) / 86400000
+  if (days < 1) return 'hoy'
+  if (days < 2) return 'ayer'
+  if (days < 7) return `hace ${Math.round(days)}d`
+  if (days < 30) return `hace ${Math.round(days / 7)}sem`
+  return `hace ${Math.round(days / 30)}mes`
 }
-
-function formatDate(dateStr: string | null) {
-  if (!dateStr) return null
-  return new Date(dateStr).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
-}
-
-const TABS = [
-  { label: 'Todas', value: 'all' },
-  { label: 'Publicadas', value: 'published' },
-  { label: 'Borradores', value: 'draft' },
-]
 
 export default async function ProjectPage({
   params,
@@ -61,92 +52,141 @@ export default async function ProjectPage({
   if (filter === 'draft') query = query.eq('published', false)
   const { data: entries } = await query.order('created_at', { ascending: false })
 
+  const all = entries ?? []
+  const publishedCount = all.filter(e => e.published).length
+  const draftCount = all.filter(e => !e.published).length
+
+  const initials = project.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
+
   return (
     <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900">{project.name}</h1>
-          {project.description && (
-            <p className="mt-1 text-sm text-zinc-500">{project.description}</p>
-          )}
+      {/* Header */}
+      <div className="flex items-start justify-between mb-6">
+        <div className="flex items-start gap-3">
+          <div
+            className="w-[44px] h-[44px] rounded-[10px] grid place-items-center font-mono font-bold text-base shrink-0 mt-0.5"
+            style={{ background: project.brand_color ?? 'var(--accent)', color: 'var(--accent-fg)' }}
+          >
+            {initials}
+          </div>
+          <div>
+            <p className="font-mono text-xs mb-0.5" style={{ color: 'var(--fg-faint)' }}>proyectos / {slug}</p>
+            <h1 className="text-[22px] font-bold tracking-tight">{project.name}</h1>
+            {project.description && (
+              <p className="text-sm mt-0.5" style={{ color: 'var(--fg-muted)' }}>{project.description}</p>
+            )}
+          </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0 mt-1">
+          <Link
+            href={`/${slug}`}
+            className="text-[13px] font-medium px-2.5 py-1.5 rounded-lg transition-colors hover:opacity-80"
+            style={{ color: 'var(--fg-muted)' }}
+          >
+            Ver página pública ↗
+          </Link>
           <Link
             href={`/dashboard/${slug}/settings`}
-            className="rounded-md border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 transition-colors"
+            className="inline-flex font-medium text-[13px] px-3 py-1.5 rounded-lg"
+            style={{ background: 'var(--bg-elev)', color: 'var(--fg)', border: '1px solid var(--border)' }}
           >
             Ajustes
           </Link>
           <Link
             href={`/dashboard/${slug}/entries/new`}
-            className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+            className="inline-flex font-semibold text-[13px] px-3 py-1.5 rounded-lg hover:brightness-110"
+            style={{ background: 'var(--accent)', color: 'var(--accent-fg)' }}
           >
-            Nueva entrada
+            + Nueva entrada
           </Link>
         </div>
       </div>
 
-      <div className="flex gap-6 mb-6 border-b border-zinc-200">
-        {TABS.map((tab) => (
+      {/* Tabs */}
+      <div className="flex items-center mb-4" style={{ borderBottom: '1px solid var(--border)' }}>
+        {([['all', 'Todas', all.length], ['published', 'Publicadas', publishedCount], ['draft', 'Borradores', draftCount]] as const).map(([val, label, count]) => (
           <Link
-            key={tab.value}
-            href={`/dashboard/${slug}?filter=${tab.value}`}
-            className={`pb-3 text-sm transition-colors ${
-              filter === tab.value
-                ? 'border-b-2 border-zinc-900 font-semibold text-zinc-900'
-                : 'text-zinc-500 hover:text-zinc-700'
-            }`}
+            key={val}
+            href={`/dashboard/${slug}?filter=${val}`}
+            className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium transition-colors"
+            style={{
+              color: filter === val ? 'var(--fg)' : 'var(--fg-muted)',
+              borderBottom: filter === val ? '2px solid var(--accent)' : '2px solid transparent',
+              marginBottom: -1,
+            }}
           >
-            {tab.label}
+            {label}
+            <span className="font-mono text-[11px]" style={{ color: 'var(--fg-faint)' }}>{count}</span>
           </Link>
         ))}
+        <div className="flex-1" />
+        <span className="font-mono text-[11px] px-4" style={{ color: 'var(--fg-faint)' }}>⌘F filtrar</span>
       </div>
 
-      {entries && entries.length > 0 ? (
-        <div className="rounded-lg border border-zinc-200 bg-white overflow-hidden">
-          <ul className="divide-y divide-zinc-100">
-            {entries.map((entry) => (
-              <li key={entry.id} className="flex items-center justify-between gap-4 px-6 py-4">
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_CLASSES[entry.type] ?? 'bg-zinc-100 text-zinc-600'}`}>
-                    {TYPE_LABELS[entry.type] ?? entry.type}
-                  </span>
-                  <span className="truncate text-sm font-medium text-zinc-900">{entry.title}</span>
-                  {entry.version && (
-                    <span className="shrink-0 text-xs text-zinc-400 font-mono">{entry.version}</span>
-                  )}
-                </div>
-                <div className="flex items-center gap-4 shrink-0">
-                  <span className={`text-xs font-medium ${entry.published ? 'text-green-600' : 'text-zinc-400'}`}>
-                    {entry.published ? formatDate(entry.published_at) ?? 'Publicado' : 'Borrador'}
-                  </span>
-                  <Link
-                    href={`/dashboard/${slug}/entries/${entry.id}/edit`}
-                    className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
-                  >
-                    Editar
-                  </Link>
-                  <EntryActions
-                    entryId={entry.id}
-                    slug={slug}
-                    published={entry.published}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
+      {/* Entries */}
+      {all.length > 0 ? (
+        <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+          {all.map((entry, i) => (
+            <div
+              key={entry.id}
+              className="flex items-center gap-4 px-5 py-3.5"
+              style={{
+                borderBottom: i < all.length - 1 ? '1px solid var(--border)' : 'none',
+                background: 'var(--bg-elev)',
+              }}
+            >
+              <span className="font-mono text-[11px] shrink-0">
+                <span style={{ color: 'var(--fg-faint)' }}>[ </span>
+                <span style={{ color: typeColor[entry.type] }}>{entry.type}</span>
+                <span style={{ color: 'var(--fg-faint)' }}> ]</span>
+              </span>
+              <span
+                className="font-mono text-[11px] px-1.5 py-[2px] rounded-[4px] shrink-0"
+                style={{ color: 'var(--fg-subtle)', border: '1px solid var(--border)', background: 'var(--bg)' }}
+              >
+                {entry.version}
+              </span>
+              <span className="flex-1 text-sm font-medium truncate" style={{ color: 'var(--fg)' }}>
+                {entry.title}
+              </span>
+              <span
+                className="text-xs font-medium shrink-0 flex items-center gap-1.5"
+                style={{ color: entry.published ? 'var(--t-feature)' : 'var(--fg-subtle)' }}
+              >
+                {entry.published && (
+                  <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: 'var(--t-feature)' }} />
+                )}
+                {entry.published ? 'publicado' : 'borrador'}
+              </span>
+              <span className="font-mono text-[11px] shrink-0" style={{ color: 'var(--fg-faint)' }}>
+                {relTime(entry.published_at ?? entry.created_at)}
+              </span>
+              <Link
+                href={`/dashboard/${slug}/entries/${entry.id}/edit`}
+                className="text-[13px] shrink-0 hover:opacity-70 transition-opacity"
+                style={{ color: 'var(--fg-faint)' }}
+              >
+                ✎
+              </Link>
+              <EntryActions entryId={entry.id} slug={slug} published={entry.published} />
+            </div>
+          ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-zinc-200 bg-white py-20 text-center">
-          <h2 className="text-lg font-semibold text-zinc-900 mb-1">Sin entradas todavía</h2>
-          <p className="text-sm text-zinc-500 mb-6 max-w-xs">
-            Crea tu primera entrada de changelog para este proyecto.
+        <div
+          className="flex flex-col items-center justify-center rounded-xl py-20 text-center"
+          style={{ border: '1px dashed var(--border)' }}
+        >
+          <h2 className="text-base font-semibold mb-1">Sin entradas en este filtro</h2>
+          <p className="text-sm mb-6 max-w-xs" style={{ color: 'var(--fg-muted)' }}>
+            Prueba a cambiar el filtro o crea una nueva entrada.
           </p>
           <Link
             href={`/dashboard/${slug}/entries/new`}
-            className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+            className="inline-flex font-semibold text-[13px] px-3 py-1.5 rounded-lg hover:brightness-110"
+            style={{ background: 'var(--accent)', color: 'var(--accent-fg)' }}
           >
-            Nueva entrada
+            + Nueva entrada
           </Link>
         </div>
       )}
