@@ -10,7 +10,7 @@ export default async function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>
       <div className="w-full max-w-[420px] px-8 flex flex-col gap-8">
-        <div>
+        <div className="text-center">
           <h2 className="text-[28px] font-bold tracking-tight mb-3">Bienvenido de vuelta</h2>
           <p className="text-[15px] leading-[1.55]" style={{ color: 'var(--fg-muted)' }}>
             Autentícate con GitHub para gestionar tus proyectos y seguir a otros desarrolladores.

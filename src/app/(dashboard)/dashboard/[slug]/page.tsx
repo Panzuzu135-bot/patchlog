@@ -44,17 +44,18 @@ export default async function ProjectPage({
 
   if (!project) notFound()
 
-  let query = supabase
+  const { data: allData } = await supabase
     .from('changelog_entries')
     .select('id, title, version, type, published, published_at, created_at')
     .eq('project_id', project.id)
-  if (filter === 'published') query = query.eq('published', true)
-  if (filter === 'draft') query = query.eq('published', false)
-  const { data: entries } = await query.order('created_at', { ascending: false })
+    .order('created_at', { ascending: false })
 
-  const all = entries ?? []
+  const all = allData ?? []
   const publishedCount = all.filter(e => e.published).length
   const draftCount = all.filter(e => !e.published).length
+  const entries = filter === 'published' ? all.filter(e => e.published)
+    : filter === 'draft' ? all.filter(e => !e.published)
+    : all
 
   const initials = project.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
 
@@ -124,14 +125,14 @@ export default async function ProjectPage({
       </div>
 
       {/* Entries */}
-      {all.length > 0 ? (
+      {entries.length > 0 ? (
         <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
-          {all.map((entry, i) => (
+          {entries.map((entry, i) => (
             <div
               key={entry.id}
               className="flex items-center gap-4 px-5 py-3.5"
               style={{
-                borderBottom: i < all.length - 1 ? '1px solid var(--border)' : 'none',
+                borderBottom: i < entries.length - 1 ? '1px solid var(--border)' : 'none',
                 background: 'var(--bg-elev)',
               }}
             >
