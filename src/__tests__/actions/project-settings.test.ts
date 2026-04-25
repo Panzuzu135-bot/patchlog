@@ -144,6 +144,63 @@ describe('updateProject', () => {
       expect.objectContaining({ description: null })
     )
   })
+
+  it('devuelve error cuando brand_color contiene una inyección CSS', async () => {
+    const chain = makeChain({ error: null })
+    mockCreateClient.mockResolvedValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-123' } } }) },
+      from: vi.fn().mockReturnValue(chain),
+    } as any)
+
+    const result = await updateProject(TEST_SLUG, makeFormData({
+      name: 'Nombre válido',
+      brand_color: 'url(https://evil.com/track)',
+    }))
+
+    expect(result).toEqual({ error: 'Color de marca inválido' })
+  })
+
+  it('devuelve error cuando brand_color es un nombre de color CSS (no hex)', async () => {
+    const chain = makeChain({ error: null })
+    mockCreateClient.mockResolvedValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-123' } } }) },
+      from: vi.fn().mockReturnValue(chain),
+    } as any)
+
+    const result = await updateProject(TEST_SLUG, makeFormData({
+      name: 'Nombre válido',
+      brand_color: 'red',
+    }))
+
+    expect(result).toEqual({ error: 'Color de marca inválido' })
+  })
+
+  it('no llama a update de Supabase cuando brand_color es inválido', async () => {
+    const chain = makeChain({ error: null })
+    mockCreateClient.mockResolvedValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-123' } } }) },
+      from: vi.fn().mockReturnValue(chain),
+    } as any)
+
+    await updateProject(TEST_SLUG, makeFormData({
+      name: 'Nombre válido',
+      brand_color: 'javascript:alert(1)',
+    }))
+
+    expect(chain.update).not.toHaveBeenCalled()
+  })
+
+  it('acepta brand_color vacío (sin valor) y omite la validación', async () => {
+    const chain = makeChain({ error: null })
+    mockCreateClient.mockResolvedValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-123' } } }) },
+      from: vi.fn().mockReturnValue(chain),
+    } as any)
+
+    const result = await updateProject(TEST_SLUG, makeFormData({ name: 'Nombre válido' }))
+
+    expect(result).toEqual({ success: true })
+  })
 })
 
 describe('deleteProject', () => {

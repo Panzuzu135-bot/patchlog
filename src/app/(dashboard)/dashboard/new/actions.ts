@@ -21,6 +21,11 @@ export async function createProject(_prevState: { error?: string }, formData: Fo
     return { error: 'El slug solo puede contener letras minúsculas, números y guiones' }
   }
 
+  const colorRegex = /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/
+  if (brand_color && !colorRegex.test(brand_color)) {
+    return { error: 'Color de marca inválido' }
+  }
+
   const { error } = await supabase.from('projects').insert({
     name: name.trim(),
     slug: slug.trim(),

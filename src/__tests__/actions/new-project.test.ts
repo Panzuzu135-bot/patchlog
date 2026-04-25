@@ -194,4 +194,70 @@ describe('createProject', () => {
       expect.objectContaining({ brand_color: '#6366f1' })
     )
   })
+
+  it('devuelve error cuando brand_color contiene una inyección CSS', async () => {
+    const chain = makeChain({ error: null })
+    mockCreateClient.mockResolvedValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-123' } } }) },
+      from: vi.fn().mockReturnValue(chain),
+    } as any)
+
+    const result = await createProject({}, makeFormData({
+      name: 'Mi Proyecto',
+      slug: 'mi-proyecto',
+      brand_color: 'url(https://evil.com/track)',
+    }))
+
+    expect(result).toEqual({ error: 'Color de marca inválido' })
+  })
+
+  it('devuelve error cuando brand_color es un nombre de color CSS (no hex)', async () => {
+    const chain = makeChain({ error: null })
+    mockCreateClient.mockResolvedValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-123' } } }) },
+      from: vi.fn().mockReturnValue(chain),
+    } as any)
+
+    const result = await createProject({}, makeFormData({
+      name: 'Mi Proyecto',
+      slug: 'mi-proyecto',
+      brand_color: 'red',
+    }))
+
+    expect(result).toEqual({ error: 'Color de marca inválido' })
+  })
+
+  it('no llama a insert cuando brand_color es inválido', async () => {
+    const chain = makeChain({ error: null })
+    mockCreateClient.mockResolvedValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-123' } } }) },
+      from: vi.fn().mockReturnValue(chain),
+    } as any)
+
+    await createProject({}, makeFormData({
+      name: 'Mi Proyecto',
+      slug: 'mi-proyecto',
+      brand_color: 'javascript:alert(1)',
+    }))
+
+    expect(chain.insert).not.toHaveBeenCalled()
+  })
+
+  it('acepta un color hex de 3 dígitos como brand_color válido', async () => {
+    const chain = makeChain({ error: null })
+    mockCreateClient.mockResolvedValue({
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-123' } } }) },
+      from: vi.fn().mockReturnValue(chain),
+    } as any)
+
+    await createProject({}, makeFormData({
+      name: 'Mi Proyecto',
+      slug: 'mi-proyecto',
+      brand_color: '#fff',
+    }))
+
+    expect(chain.insert).toHaveBeenCalledWith(
+      expect.objectContaining({ brand_color: '#fff' })
+    )
+  })
 })

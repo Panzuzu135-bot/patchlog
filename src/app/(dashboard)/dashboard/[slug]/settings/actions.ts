@@ -14,6 +14,11 @@ export async function updateProject(slug: string, formData: FormData) {
 
   if (!name?.trim()) return { error: 'El nombre es obligatorio' }
 
+  const colorRegex = /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/
+  if (brand_color && !colorRegex.test(brand_color)) {
+    return { error: 'Color de marca inválido' }
+  }
+
   const { error } = await supabase
     .from('projects')
     .update({

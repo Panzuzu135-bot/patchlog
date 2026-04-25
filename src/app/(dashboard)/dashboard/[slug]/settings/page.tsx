@@ -29,11 +29,12 @@ export default async function ProjectSettingsPage({
       <div className="mb-8">
         <Link
           href={`/dashboard/${slug}`}
-          className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors"
+          className="text-sm transition-colors"
+          style={{ color: 'var(--fg-muted)' }}
         >
           ← Volver al proyecto
         </Link>
-        <h1 className="mt-3 text-2xl font-bold text-zinc-900">
+        <h1 className="mt-3 text-2xl font-bold" style={{ color: 'var(--fg)' }}>
           Ajustes — {project.name}
         </h1>
       </div>
