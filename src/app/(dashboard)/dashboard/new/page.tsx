@@ -37,19 +37,20 @@ export default function NewProjectPage() {
       <div className="mb-6 flex items-center gap-3">
         <Link
           href="/dashboard"
-          className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors"
+          className="text-sm transition-colors"
+          style={{ color: 'var(--fg-muted)' }}
         >
           ← Volver
         </Link>
-        <span className="text-zinc-300">/</span>
-        <h1 className="text-xl font-bold text-zinc-900">Nuevo proyecto</h1>
+        <span style={{ color: 'var(--fg-faint)' }}>/</span>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--fg)' }}>Nuevo proyecto</h1>
       </div>
 
       <div className="max-w-lg">
         <form action={formAction} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="name" className="text-sm font-medium text-zinc-700">
-              Nombre <span className="text-zinc-400 font-normal">(requerido)</span>
+            <label htmlFor="name" className="text-sm font-medium" style={{ color: 'var(--fg-muted)' }}>
+              Nombre <span className="font-normal" style={{ color: 'var(--fg-subtle)' }}>(requerido)</span>
             </label>
             <input
               id="name"
@@ -59,13 +60,18 @@ export default function NewProjectPage() {
               value={name}
               onChange={handleNameChange}
               placeholder="Mi proyecto"
-              className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200 transition-colors"
+              className="appearance-none rounded-md border px-3 py-2 text-sm outline-none transition-colors"
+              style={{
+                borderColor: 'var(--border)',
+                background: 'var(--bg-elev-2)',
+                color: 'var(--fg)',
+              }}
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="slug" className="text-sm font-medium text-zinc-700">
-              Slug <span className="text-zinc-400 font-normal">(requerido)</span>
+            <label htmlFor="slug" className="text-sm font-medium" style={{ color: 'var(--fg-muted)' }}>
+              Slug <span className="font-normal" style={{ color: 'var(--fg-subtle)' }}>(requerido)</span>
             </label>
             <input
               id="slug"
@@ -75,36 +81,42 @@ export default function NewProjectPage() {
               value={slug}
               onChange={handleSlugChange}
               placeholder="mi-proyecto"
-              className={`rounded-md border bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:ring-2 transition-colors ${
-                slugInvalid
-                  ? 'border-red-300 focus:border-red-400 focus:ring-red-100'
-                  : 'border-zinc-200 focus:border-zinc-400 focus:ring-zinc-200'
-              }`}
+              className="appearance-none rounded-md border px-3 py-2 text-sm outline-none transition-colors"
+              style={{
+                borderColor: slugInvalid ? 'oklch(0.5 0.15 15)' : 'var(--border)',
+                background: 'var(--bg-elev-2)',
+                color: 'var(--fg)',
+              }}
             />
             {slugInvalid && (
-              <p className="text-xs text-red-500">Solo minúsculas, números y guiones</p>
+              <p className="text-xs text-red-400">Solo minúsculas, números y guiones</p>
             )}
-            <p className="text-xs text-zinc-500">
-              URL pública: patchlog.io/<strong className="text-zinc-700">{slug || 'mi-proyecto'}</strong>
+            <p className="text-xs" style={{ color: 'var(--fg-subtle)' }}>
+              URL pública: patchlog.io/<strong style={{ color: 'var(--fg-muted)' }}>{slug || 'mi-proyecto'}</strong>
             </p>
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="description" className="text-sm font-medium text-zinc-700">
-              Descripción <span className="text-zinc-400 font-normal">(opcional)</span>
+            <label htmlFor="description" className="text-sm font-medium" style={{ color: 'var(--fg-muted)' }}>
+              Descripción <span className="font-normal" style={{ color: 'var(--fg-subtle)' }}>(opcional)</span>
             </label>
             <textarea
               id="description"
               name="description"
               rows={3}
               placeholder="Breve descripción del proyecto"
-              className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200 transition-colors resize-none"
+              className="appearance-none rounded-md border px-3 py-2 text-sm outline-none transition-colors resize-none"
+              style={{
+                borderColor: 'var(--border)',
+                background: 'var(--bg-elev-2)',
+                color: 'var(--fg)',
+              }}
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="brand_color" className="text-sm font-medium text-zinc-700">
-              Color de marca <span className="text-zinc-400 font-normal">(opcional)</span>
+            <label htmlFor="brand_color" className="text-sm font-medium" style={{ color: 'var(--fg-muted)' }}>
+              Color de marca <span className="font-normal" style={{ color: 'var(--fg-subtle)' }}>(opcional)</span>
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -112,14 +124,16 @@ export default function NewProjectPage() {
                 name="brand_color"
                 type="color"
                 defaultValue="#6366f1"
-                className="h-9 w-14 cursor-pointer rounded-md border border-zinc-200 bg-white p-1 outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200 transition-colors"
+                className="h-9 w-14 cursor-pointer rounded-md border p-1 outline-none transition-colors"
+                style={{ borderColor: 'var(--border)', background: 'var(--bg-elev-2)' }}
               />
-              <span className="text-xs text-zinc-500">Color de acento del proyecto</span>
+              <span className="text-xs" style={{ color: 'var(--fg-subtle)' }}>Color de acento del proyecto</span>
             </div>
           </div>
 
           {state?.error && (
-            <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+            <p className="rounded-md border px-3 py-2 text-sm text-red-400"
+              style={{ borderColor: 'oklch(0.45 0.1 15 / 0.5)', background: 'oklch(0.2 0.05 15 / 0.3)' }}>
               {state.error}
             </p>
           )}
@@ -128,7 +142,8 @@ export default function NewProjectPage() {
             <button
               type="submit"
               disabled={!canSubmit}
-              className="rounded-md bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="rounded-md px-5 py-2 text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ background: 'var(--fg)', color: 'var(--bg)' }}
             >
               {pending ? 'Creando...' : 'Crear proyecto'}
             </button>

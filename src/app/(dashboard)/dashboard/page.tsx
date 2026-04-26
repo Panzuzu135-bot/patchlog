@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import ImportGitHubButton from './ImportGitHubButton'
 
 function initials(name: string) {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
@@ -39,12 +40,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 mt-1 shrink-0">
-          <span
-            className="inline-flex items-center font-medium text-[13px] px-3 py-1.5 rounded-lg"
-            style={{ background: 'var(--bg-elev)', color: 'var(--fg)', border: '1px solid var(--border)' }}
-          >
-            Importar desde GitHub
-          </span>
+          <ImportGitHubButton />
           <Link
             href="/dashboard/new"
             className="inline-flex items-center font-semibold text-[13px] px-3 py-1.5 rounded-lg transition-all hover:brightness-110"
