@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { marked } from 'marked'
-import DOMPurify from 'isomorphic-dompurify'
+import sanitizeHtml from 'sanitize-html'
 import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/types/supabase'
 import FollowButton from './FollowButton'
@@ -137,7 +137,7 @@ export default async function ProjectChangelogPage({ params }: { params: Promise
             />
             <div className="flex flex-col gap-10">
               {entries.map(entry => {
-                const html = DOMPurify.sanitize(marked.parse(entry.content ?? '', { async: false }) as string)
+                const html = sanitizeHtml(marked.parse(entry.content ?? '', { async: false }) as string)
                 return (
                   <article key={entry.id} className="pl-8 relative">
                     <div
