@@ -60,9 +60,9 @@ export default async function ProjectPage({
   const initials = project.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between mb-6">
         <div className="flex items-start gap-3">
           <div
             className="w-[44px] h-[44px] rounded-[10px] grid place-items-center font-mono font-bold text-base shrink-0 mt-0.5"
@@ -78,7 +78,7 @@ export default async function ProjectPage({
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0 mt-1">
+        <div className="flex items-center gap-2 shrink-0 md:mt-1">
           <Link
             href={`/${slug}`}
             className="text-[13px] font-medium px-2.5 py-1.5 rounded-lg transition-colors hover:opacity-80"
@@ -126,23 +126,29 @@ export default async function ProjectPage({
 
       {/* Entries */}
       {entries.length > 0 ? (
-        <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+        <div className="rounded-xl overflow-x-auto" style={{ border: '1px solid var(--border)' }}>
           {entries.map((entry, i) => (
             <div
               key={entry.id}
-              className="flex items-center gap-4 px-5 py-3.5"
+              className="flex items-center gap-3 px-4 py-3.5 md:gap-4 md:px-5"
               style={{
                 borderBottom: i < entries.length - 1 ? '1px solid var(--border)' : 'none',
                 background: 'var(--bg-elev)',
               }}
             >
-              <span className="font-mono text-[11px] shrink-0">
+              <span className="font-mono text-[11px] shrink-0 hidden sm:inline">
                 <span style={{ color: 'var(--fg-faint)' }}>[ </span>
                 <span style={{ color: typeColor[entry.type] }}>{entry.type}</span>
                 <span style={{ color: 'var(--fg-faint)' }}> ]</span>
               </span>
               <span
-                className="font-mono text-[11px] px-1.5 py-[2px] rounded-[4px] shrink-0"
+                className="font-mono text-[11px] px-1.5 py-[2px] rounded-[4px] shrink-0 sm:hidden"
+                style={{ color: typeColor[entry.type], border: `1px solid ${typeColor[entry.type]}`, background: 'var(--bg)' }}
+              >
+                {entry.type.slice(0, 3)}
+              </span>
+              <span
+                className="font-mono text-[11px] px-1.5 py-[2px] rounded-[4px] shrink-0 hidden sm:inline"
                 style={{ color: 'var(--fg-subtle)', border: '1px solid var(--border)', background: 'var(--bg)' }}
               >
                 {entry.version}
@@ -157,14 +163,14 @@ export default async function ProjectPage({
                 {entry.published && (
                   <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: 'var(--t-feature)' }} />
                 )}
-                {entry.published ? 'publicado' : 'borrador'}
+                <span className="hidden sm:inline">{entry.published ? 'publicado' : 'borrador'}</span>
               </span>
-              <span className="font-mono text-[11px] shrink-0" style={{ color: 'var(--fg-faint)' }}>
+              <span className="font-mono text-[11px] shrink-0 hidden md:inline" style={{ color: 'var(--fg-faint)' }}>
                 {relTime(entry.published_at ?? entry.created_at)}
               </span>
               <Link
                 href={`/dashboard/${slug}/entries/${entry.id}/edit`}
-                className="text-[13px] shrink-0 hover:opacity-70 transition-opacity"
+                className="text-[13px] shrink-0 hover:opacity-70 transition-opacity min-h-[44px] min-w-[44px] flex items-center justify-center"
                 style={{ color: 'var(--fg-faint)' }}
               >
                 ✎

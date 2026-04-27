@@ -104,7 +104,7 @@ export default function EntryEditForm({ entry, slug }: Props) {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <label htmlFor="version" className="block text-sm font-medium text-zinc-700">
             Versión <span className="text-zinc-400 font-normal">(opcional)</span>
@@ -115,7 +115,7 @@ export default function EntryEditForm({ entry, slug }: Props) {
             type="text"
             placeholder="v2.1.0"
             defaultValue={entry.version ?? ''}
-            className="w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none transition-colors"
+            className="w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none transition-colors min-h-[44px]"
           />
         </div>
 
@@ -127,7 +127,7 @@ export default function EntryEditForm({ entry, slug }: Props) {
             id="type"
             name="type"
             defaultValue={entry.type}
-            className="w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none transition-colors"
+            className="w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none transition-colors min-h-[44px]"
           >
             {ENTRY_TYPES.map((t) => (
               <option key={t.value} value={t.value}>

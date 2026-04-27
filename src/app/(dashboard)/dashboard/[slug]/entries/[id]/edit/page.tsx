@@ -28,7 +28,7 @@ export default async function EditEntryPage({
   if (project.user_id !== user.id) notFound()
 
   return (
-    <div className="p-8 max-w-2xl">
+    <div className="p-4 md:p-8 w-full max-w-2xl">
       <div className="mb-8">
         <Link
           href={`/dashboard/${slug}`}
@@ -36,16 +36,16 @@ export default async function EditEntryPage({
         >
           ← Volver al proyecto
         </Link>
-        <h1 className="mt-3 text-2xl font-bold text-zinc-900">
+        <h1 className="mt-3 text-xl md:text-2xl font-bold text-zinc-900 break-words">
           Editar entrada — {project.name}
         </h1>
       </div>
 
       <div className="rounded-lg border border-zinc-200 bg-white">
-        <div className="px-6 py-4 border-b border-zinc-200">
+        <div className="px-4 py-4 md:px-6 border-b border-zinc-200">
           <h2 className="text-base font-semibold text-zinc-900">Detalles de la entrada</h2>
         </div>
-        <div className="px-6 py-5">
+        <div className="px-4 py-5 md:px-6">
           <EntryEditForm
             entry={{
               id: entry.id,
