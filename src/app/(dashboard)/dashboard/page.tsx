@@ -30,8 +30,8 @@ export default async function DashboardPage() {
   const totalEntries = Object.values(stats).reduce((s, c) => s + c.entries, 0)
 
   return (
-    <div className="p-8 max-w-[900px]">
-      <div className="flex items-start justify-between mb-6">
+    <div className="p-4 md:p-8 max-w-[900px]">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between mb-6">
         <div>
           <p className="font-mono text-xs mb-1" style={{ color: 'var(--fg-faint)' }}>~ / proyectos</p>
           <h1 className="text-[28px] font-bold tracking-tight">Mis proyectos</h1>
@@ -39,7 +39,7 @@ export default async function DashboardPage() {
             {projects?.length ?? 0} proyectos · {totalEntries} entradas publicadas este mes
           </p>
         </div>
-        <div className="flex items-center gap-2 mt-1 shrink-0">
+        <div className="flex items-center gap-2 md:mt-1 md:shrink-0">
           <ImportGitHubButton />
           <Link
             href="/dashboard/new"

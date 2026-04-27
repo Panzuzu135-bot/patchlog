@@ -1,11 +1,13 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import { useDrawer } from './DashboardShell'
 
 type Project = { name: string; slug: string }
 
 export default function TopNav({ projects }: { projects: Project[] }) {
   const pathname = usePathname()
+  const { toggle } = useDrawer()
   const slugMatch = pathname.match(/^\/dashboard\/([^/]+)/)
   const currentSlug = slugMatch?.[1] ?? projects[0]?.slug ?? ''
 
@@ -24,9 +26,22 @@ export default function TopNav({ projects }: { projects: Project[] }) {
 
   return (
     <div
-      className="h-[52px] flex items-center px-5 gap-1 shrink-0"
+      className="h-[52px] flex items-center px-3 md:px-5 gap-1 shrink-0"
       style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}
     >
+      {/* Hamburger button — mobile only */}
+      <button
+        type="button"
+        onClick={toggle}
+        className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-[5px] rounded-[6px] shrink-0 mr-1"
+        style={{ color: 'var(--fg-muted)' }}
+        aria-label="Abrir menú"
+      >
+        <span className="block w-4.5 h-[1.5px] rounded-full" style={{ background: 'currentColor' }} />
+        <span className="block w-4.5 h-[1.5px] rounded-full" style={{ background: 'currentColor' }} />
+        <span className="block w-4.5 h-[1.5px] rounded-full" style={{ background: 'currentColor' }} />
+      </button>
+
       <div className="flex items-center gap-2.5 font-mono font-semibold text-sm tracking-tight mr-3 shrink-0">
         <span
           className="w-[22px] h-[22px] grid place-items-center rounded-[6px] text-xs font-bold"
@@ -34,11 +49,11 @@ export default function TopNav({ projects }: { projects: Project[] }) {
         >~</span>
         <Link href="/dashboard" className="hover:opacity-80">
           <span style={{ color: 'var(--fg)' }}>patchlog</span>
-          <span className="font-normal" style={{ color: 'var(--fg-faint)' }}>/v1</span>
+          <span className="hidden sm:inline font-normal" style={{ color: 'var(--fg-faint)' }}>/v1</span>
         </Link>
       </div>
 
-      <nav className="flex items-center gap-0.5">
+      <nav className="hidden md:flex items-center gap-0.5">
         {navItems.filter(i => !i.hidden).map(item => (
           <Link
             key={item.label}
@@ -56,7 +71,7 @@ export default function TopNav({ projects }: { projects: Project[] }) {
 
       <div className="flex-1" />
 
-      <Link href="/" className="text-[13px] font-medium px-2.5 py-1.5 rounded-[6px]" style={{ color: 'var(--fg-muted)' }}>
+      <Link href="/" className="hidden md:block text-[13px] font-medium px-2.5 py-1.5 rounded-[6px]" style={{ color: 'var(--fg-muted)' }}>
         Ver landing
       </Link>
       <form action="/auth/logout" method="POST">
