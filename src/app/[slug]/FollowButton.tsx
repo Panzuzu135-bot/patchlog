@@ -38,14 +38,14 @@ export default function FollowButton({
     <button
       onClick={handleClick}
       disabled={isPending}
-      className="inline-flex items-center rounded-lg overflow-hidden font-semibold text-[13px] transition-all hover:brightness-110 disabled:opacity-60 shrink-0"
+      className="inline-flex items-center min-h-[44px] rounded-lg overflow-hidden font-semibold text-[13px] transition-all hover:brightness-110 disabled:opacity-60 shrink-0"
       style={{ border: `1px solid ${bg}`, opacity: following ? 0.8 : 1 }}
     >
-      <span className="px-3 py-1.5" style={{ background: bg, color: 'var(--accent-fg)' }}>
+      <span className="px-3 py-2" style={{ background: bg, color: 'var(--accent-fg)' }}>
         {following ? 'Siguiendo' : 'Seguir'}
       </span>
       <span
-        className="px-2.5 py-1.5 font-mono text-xs"
+        className="px-2.5 py-2 font-mono text-xs"
         style={{ background: 'var(--bg-elev)', color: bg, borderLeft: `1px solid ${bg}` }}
       >
         {count}
