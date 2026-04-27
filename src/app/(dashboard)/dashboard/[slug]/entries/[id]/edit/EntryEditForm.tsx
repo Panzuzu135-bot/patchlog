@@ -3,12 +3,20 @@ import { useState } from 'react'
 import { updateEntry } from '../../actions'
 
 const ENTRY_TYPES = [
-  { value: 'feature', label: 'Feature' },
-  { value: 'fix', label: 'Fix' },
-  { value: 'improvement', label: 'Improvement' },
-  { value: 'breaking', label: 'Breaking' },
-  { value: 'security', label: 'Security' },
+  { value: 'feature', label: 'feature' },
+  { value: 'fix', label: 'fix' },
+  { value: 'improvement', label: 'improvement' },
+  { value: 'breaking', label: 'breaking' },
+  { value: 'security', label: 'security' },
 ] as const
+
+const typeColor: Record<string, string> = {
+  feature: 'var(--t-feature)',
+  fix: 'var(--t-fix)',
+  improvement: 'var(--t-improvement)',
+  breaking: 'var(--t-breaking)',
+  security: 'var(--t-security)',
+}
 
 type Entry = {
   id: string
@@ -27,6 +35,7 @@ type Props = {
 export default function EntryEditForm({ entry, slug }: Props) {
   const [tab, setTab] = useState<'write' | 'preview'>('write')
   const [content, setContent] = useState(entry.content)
+  const [type, setType] = useState(entry.type)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -45,10 +54,10 @@ export default function EntryEditForm({ entry, slug }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-1.5">
-        <label htmlFor="title" className="block text-sm font-medium text-zinc-700">
-          Título <span className="text-red-500">*</span>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="title" className="text-sm font-medium" style={{ color: 'var(--fg-muted)' }}>
+          Título <span className="font-normal" style={{ color: 'var(--fg-faint)' }}>*</span>
         </label>
         <input
           id="title"
@@ -56,27 +65,36 @@ export default function EntryEditForm({ entry, slug }: Props) {
           type="text"
           required
           defaultValue={entry.title}
-          className="w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none transition-colors"
+          className="w-full rounded-lg px-3 py-2 text-sm outline-none transition-colors"
+          style={{ background: 'var(--bg-elev)', border: '1px solid var(--border)', color: 'var(--fg)' }}
         />
       </div>
 
-      <div className="space-y-1.5">
+      <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <label className="block text-sm font-medium text-zinc-700">
-            Contenido <span className="text-red-500">*</span>
+          <label className="text-sm font-medium" style={{ color: 'var(--fg-muted)' }}>
+            Contenido <span className="font-normal" style={{ color: 'var(--fg-faint)' }}>*</span>
           </label>
-          <div className="flex rounded-md border border-zinc-200 overflow-hidden text-xs">
+          <div className="flex rounded-lg overflow-hidden text-xs" style={{ border: '1px solid var(--border)' }}>
             <button
               type="button"
               onClick={() => setTab('write')}
-              className={`px-3 py-1 transition-colors ${tab === 'write' ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-600 hover:bg-zinc-50'}`}
+              className="px-3 py-1 transition-colors"
+              style={{
+                background: tab === 'write' ? 'var(--fg)' : 'var(--bg-elev)',
+                color: tab === 'write' ? 'var(--bg)' : 'var(--fg-muted)',
+              }}
             >
               Escribir
             </button>
             <button
               type="button"
               onClick={() => setTab('preview')}
-              className={`px-3 py-1 transition-colors ${tab === 'preview' ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-600 hover:bg-zinc-50'}`}
+              className="px-3 py-1 transition-colors"
+              style={{
+                background: tab === 'preview' ? 'var(--fg)' : 'var(--bg-elev)',
+                color: tab === 'preview' ? 'var(--bg)' : 'var(--fg-muted)',
+              }}
             >
               Preview
             </button>
@@ -88,46 +106,53 @@ export default function EntryEditForm({ entry, slug }: Props) {
             id="content"
             name="content"
             required
-            rows={10}
+            rows={12}
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none transition-colors resize-none font-mono"
+            placeholder="## ¿Qué cambió?"
+            className="w-full rounded-lg px-3 py-2 text-sm outline-none transition-colors resize-none font-mono leading-relaxed"
+            style={{ background: 'var(--bg-elev)', border: '1px solid var(--border)', color: 'var(--fg)' }}
           />
         ) : (
           <>
             <input type="hidden" name="content" value={content} />
-            <div className="w-full min-h-[232px] rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 whitespace-pre-wrap">
-              {content || <span className="text-zinc-400">Sin contenido aún.</span>}
+            <div
+              className="w-full min-h-[260px] rounded-lg px-3 py-2 text-sm font-mono whitespace-pre-wrap"
+              style={{ background: 'var(--bg-elev)', border: '1px solid var(--border)', color: 'var(--fg)' }}
+            >
+              {content || <span style={{ color: 'var(--fg-faint)' }}>Sin contenido aún.</span>}
             </div>
-            <p className="text-xs text-zinc-400">Preview básico — el markdown se renderizará en la vista pública.</p>
           </>
         )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <label htmlFor="version" className="block text-sm font-medium text-zinc-700">
-            Versión <span className="text-zinc-400 font-normal">(opcional)</span>
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="version" className="text-sm font-medium" style={{ color: 'var(--fg-muted)' }}>
+            Versión <span className="font-normal" style={{ color: 'var(--fg-faint)' }}>(opcional)</span>
           </label>
           <input
             id="version"
             name="version"
             type="text"
-            placeholder="v2.1.0"
+            placeholder="v1.0.0"
             defaultValue={entry.version ?? ''}
-            className="w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none transition-colors min-h-[44px]"
+            className="w-full rounded-lg px-3 py-2 font-mono text-sm outline-none min-h-[44px]"
+            style={{ background: 'var(--bg-elev)', border: '1px solid var(--border)', color: 'var(--fg)' }}
           />
         </div>
 
-        <div className="space-y-1.5">
-          <label htmlFor="type" className="block text-sm font-medium text-zinc-700">
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="type" className="text-sm font-medium" style={{ color: 'var(--fg-muted)' }}>
             Tipo
           </label>
           <select
             id="type"
             name="type"
-            defaultValue={entry.type}
-            className="w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none transition-colors min-h-[44px]"
+            value={type}
+            onChange={e => setType(e.target.value as typeof type)}
+            className="w-full rounded-lg px-3 py-2 text-sm outline-none min-h-[44px]"
+            style={{ background: 'var(--bg-elev)', border: '1px solid var(--border)', color: typeColor[type] }}
           >
             {ENTRY_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
@@ -144,20 +169,22 @@ export default function EntryEditForm({ entry, slug }: Props) {
           name="published"
           type="checkbox"
           defaultChecked={entry.published}
-          className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
+          className="w-4 h-4 rounded"
+          style={{ accentColor: 'var(--accent)' }}
         />
-        <label htmlFor="published" className="text-sm text-zinc-700">
+        <label htmlFor="published" className="text-sm" style={{ color: 'var(--fg-muted)' }}>
           Publicar ahora
         </label>
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm" style={{ color: 'var(--t-fix)' }}>{error}</p>}
 
       <div>
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 transition-colors"
+          className="rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 hover:brightness-110"
+          style={{ background: 'var(--fg)', color: 'var(--bg)' }}
         >
           {pending ? 'Guardando…' : 'Guardar cambios'}
         </button>

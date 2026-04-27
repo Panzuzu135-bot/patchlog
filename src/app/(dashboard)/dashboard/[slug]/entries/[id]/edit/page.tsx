@@ -32,18 +32,19 @@ export default async function EditEntryPage({
       <div className="mb-8">
         <Link
           href={`/dashboard/${slug}`}
-          className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors"
+          className="text-sm transition-colors"
+          style={{ color: 'var(--fg-muted)' }}
         >
           ← Volver al proyecto
         </Link>
-        <h1 className="mt-3 text-xl md:text-2xl font-bold text-zinc-900 break-words">
+        <h1 className="mt-3 text-xl md:text-2xl font-bold break-words" style={{ color: 'var(--fg)' }}>
           Editar entrada — {project.name}
         </h1>
       </div>
 
-      <div className="rounded-lg border border-zinc-200 bg-white">
-        <div className="px-4 py-4 md:px-6 border-b border-zinc-200">
-          <h2 className="text-base font-semibold text-zinc-900">Detalles de la entrada</h2>
+      <div className="rounded-xl" style={{ border: '1px solid var(--border)', background: 'var(--bg-elev)' }}>
+        <div className="px-4 py-4 md:px-6" style={{ borderBottom: '1px solid var(--border)' }}>
+          <h2 className="text-base font-semibold" style={{ color: 'var(--fg)' }}>Detalles de la entrada</h2>
         </div>
         <div className="px-4 py-5 md:px-6">
           <EntryEditForm
