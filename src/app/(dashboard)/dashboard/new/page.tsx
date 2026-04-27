@@ -33,7 +33,7 @@ export default function NewProjectPage() {
   const canSubmit = name.trim().length > 0 && slug.trim().length > 0 && !slugInvalid && !pending
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="mb-6 flex items-center gap-3">
         <Link
           href="/dashboard"
@@ -46,7 +46,7 @@ export default function NewProjectPage() {
         <h1 className="text-xl font-bold" style={{ color: 'var(--fg)' }}>Nuevo proyecto</h1>
       </div>
 
-      <div className="max-w-lg">
+      <div className="w-full md:max-w-lg">
         <form action={formAction} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="name" className="text-sm font-medium" style={{ color: 'var(--fg-muted)' }}>

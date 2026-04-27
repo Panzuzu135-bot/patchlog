@@ -46,14 +46,14 @@ export default function EntryForm({ slug }: Props) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-0">
       {/* Action bar */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <p className="font-mono text-xs" style={{ color: 'var(--fg-faint)' }}>
           {slug} / nueva entrada
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <a
             href={`/dashboard/${slug}`}
-            className="text-[13px] font-medium px-2.5 py-1.5 rounded-lg hover:opacity-80"
+            className="text-[13px] font-medium px-2.5 py-2 rounded-lg hover:opacity-80 min-h-[44px] flex items-center"
             style={{ color: 'var(--fg-muted)' }}
           >
             Cancelar
@@ -62,7 +62,7 @@ export default function EntryForm({ slug }: Props) {
             type="submit"
             disabled={pending}
             onClick={() => setPublishMode(false)}
-            className="inline-flex font-medium text-[13px] px-3 py-1.5 rounded-lg disabled:opacity-50"
+            className="inline-flex items-center font-medium text-[13px] px-3 py-2 rounded-lg disabled:opacity-50 min-h-[44px]"
             style={{ background: 'var(--bg-elev)', color: 'var(--fg)', border: '1px solid var(--border)' }}
           >
             Guardar borrador
@@ -71,7 +71,7 @@ export default function EntryForm({ slug }: Props) {
             type="submit"
             disabled={pending}
             onClick={() => setPublishMode(true)}
-            className="inline-flex font-semibold text-[13px] px-3 py-1.5 rounded-lg hover:brightness-110 disabled:opacity-50"
+            className="inline-flex items-center font-semibold text-[13px] px-3 py-2 rounded-lg hover:brightness-110 disabled:opacity-50 min-h-[44px]"
             style={{ background: 'var(--accent)', color: 'var(--accent-fg)' }}
           >
             Publicar
@@ -85,7 +85,7 @@ export default function EntryForm({ slug }: Props) {
       <input type="hidden" name="type" value={type} />
       <input type="hidden" name="published" value={publishMode ? 'on' : 'off'} />
 
-      <div className="flex gap-6">
+      <div className="flex flex-col gap-6 md:flex-row">
         {/* Main editor */}
         <div className="flex-1 min-w-0 flex flex-col gap-4">
           <input
@@ -154,7 +154,7 @@ export default function EntryForm({ slug }: Props) {
         </div>
 
         {/* Aside */}
-        <aside className="w-[220px] shrink-0 flex flex-col gap-5 pt-[60px]">
+        <aside className="w-full md:w-[220px] shrink-0 flex flex-col gap-5 md:pt-[60px]">
           <div>
             <label className="block text-xs font-medium mb-2" style={{ color: 'var(--fg-muted)' }}>Versión</label>
             <input
@@ -170,13 +170,13 @@ export default function EntryForm({ slug }: Props) {
 
           <div>
             <label className="block text-xs font-medium mb-2" style={{ color: 'var(--fg-muted)' }}>Tipo</label>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-wrap gap-1.5 md:flex-col">
               {ENTRY_TYPES.map(t => (
                 <button
                   key={t.value}
                   type="button"
                   onClick={() => setType(t.value)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] text-left transition-colors"
+                  className="flex items-center gap-2 px-3 rounded-lg text-[13px] text-left transition-colors min-h-[44px]"
                   style={{
                     background: type === t.value ? 'var(--bg-elev-2)' : 'var(--bg-elev)',
                     border: `1px solid ${type === t.value ? typeColor[t.value] : 'var(--border)'}`,

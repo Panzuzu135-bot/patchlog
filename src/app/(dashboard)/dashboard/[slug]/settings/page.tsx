@@ -25,7 +25,7 @@ export default async function ProjectSettingsPage({
   if (!project) notFound()
 
   return (
-    <div className="p-8 max-w-2xl">
+    <div className="p-4 md:p-8 w-full max-w-2xl">
       <div className="mb-8">
         <Link
           href={`/dashboard/${slug}`}
@@ -34,7 +34,7 @@ export default async function ProjectSettingsPage({
         >
           ← Volver al proyecto
         </Link>
-        <h1 className="mt-3 text-2xl font-bold" style={{ color: 'var(--fg)' }}>
+        <h1 className="mt-3 text-xl md:text-2xl font-bold break-words" style={{ color: 'var(--fg)' }}>
           Ajustes — {project.name}
         </h1>
       </div>

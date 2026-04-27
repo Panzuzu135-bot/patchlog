@@ -19,7 +19,7 @@ export default async function NewEntryPage({ params }: { params: Promise<{ slug:
   if (!project) notFound()
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <EntryForm slug={slug} />
     </div>
   )
