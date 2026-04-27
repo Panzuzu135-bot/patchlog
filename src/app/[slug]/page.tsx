@@ -69,7 +69,7 @@ export default async function ProjectChangelogPage({ params }: { params: Promise
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>
       {/* Nav */}
       <header
-        className="h-[52px] flex items-center px-5 gap-4 shrink-0"
+        className="min-h-[52px] flex flex-wrap items-center px-4 md:px-5 gap-2 md:gap-4 shrink-0"
         style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}
       >
         <div className="flex items-center gap-2.5 font-mono font-semibold text-sm tracking-tight">
@@ -94,16 +94,39 @@ export default async function ProjectChangelogPage({ params }: { params: Promise
         )}
       </header>
 
-      <main className="flex-1 max-w-[800px] mx-auto w-full px-8 py-10">
+      <main className="flex-1 max-w-[800px] mx-auto w-full px-4 py-6 md:px-8 md:py-10">
         {/* Project header */}
-        <div className="flex items-start gap-5 pb-8 mb-8" style={{ borderBottom: '1px solid var(--border)' }}>
-          <div
-            className="w-[72px] h-[72px] rounded-[14px] grid place-items-center font-mono font-bold text-2xl shrink-0"
-            style={{ background: accentColor, color: 'var(--accent-fg)' }}
-          >
-            {initials}
+        <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-5 pb-8 mb-8" style={{ borderBottom: '1px solid var(--border)' }}>
+          <div className="flex items-start gap-4 md:gap-5">
+            <div
+              className="w-[72px] h-[72px] rounded-[14px] grid place-items-center font-mono font-bold text-2xl shrink-0"
+              style={{ background: accentColor, color: 'var(--accent-fg)' }}
+            >
+              {initials}
+            </div>
+            <div className="flex-1 min-w-0 md:hidden">
+              <div className="flex items-center justify-between gap-3">
+                <h1 className="text-[24px] font-bold tracking-tight">{project.name}</h1>
+                <FollowButton
+                  projectId={project.id}
+                  slug={slug}
+                  initialFollowing={isFollowing}
+                  initialCount={followerCount ?? 0}
+                  accentColor={accentColor}
+                />
+              </div>
+              {project.description && (
+                <p className="text-sm mt-1 mb-2" style={{ color: 'var(--fg-muted)' }}>{project.description}</p>
+              )}
+              <div className="flex flex-wrap items-center gap-3 font-mono text-[12px]" style={{ color: 'var(--fg-faint)' }}>
+                <span>{entries?.length ?? 0} entradas</span>
+                <span>{followerCount ?? 0} siguen</span>
+                {lastEntry?.published_at && <span>Última: {relTime(lastEntry.published_at)}</span>}
+                <a href="#" className="hover:opacity-80" style={{ color: 'var(--accent)' }}>RSS</a>
+              </div>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="hidden md:flex flex-1 min-w-0 flex-col">
             <h1 className="text-[28px] font-bold tracking-tight mb-1">{project.name}</h1>
             {project.description && (
               <p className="text-sm mb-3" style={{ color: 'var(--fg-muted)' }}>{project.description}</p>
@@ -115,13 +138,15 @@ export default async function ProjectChangelogPage({ params }: { params: Promise
               <a href="#" className="hover:opacity-80" style={{ color: 'var(--accent)' }}>RSS</a>
             </div>
           </div>
-          <FollowButton
-            projectId={project.id}
-            slug={slug}
-            initialFollowing={isFollowing}
-            initialCount={followerCount ?? 0}
-            accentColor={accentColor}
-          />
+          <div className="hidden md:block shrink-0">
+            <FollowButton
+              projectId={project.id}
+              slug={slug}
+              initialFollowing={isFollowing}
+              initialCount={followerCount ?? 0}
+              accentColor={accentColor}
+            />
+          </div>
         </div>
 
         {/* Timeline */}
@@ -130,7 +155,7 @@ export default async function ProjectChangelogPage({ params }: { params: Promise
             Aún no hay entradas publicadas.
           </p>
         ) : (
-          <div className="relative">
+          <div className="relative px-0">
             <div
               className="absolute left-[7px] top-2 bottom-0 w-px"
               style={{ background: 'var(--border)' }}
@@ -139,7 +164,7 @@ export default async function ProjectChangelogPage({ params }: { params: Promise
               {entries.map(entry => {
                 const html = sanitizeHtml(marked.parse(entry.content ?? '', { async: false }) as string)
                 return (
-                  <article key={entry.id} className="pl-8 relative">
+                  <article key={entry.id} className="pl-8 pr-0 md:pr-0 relative">
                     <div
                       className="absolute left-0 top-[2px] w-[15px] h-[15px] rounded-full grid place-items-center"
                       style={{ border: `2px solid ${accentColor}`, background: 'var(--bg)' }}
