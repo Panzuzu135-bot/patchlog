@@ -16,17 +16,17 @@ export default async function SettingsPage() {
   const initial = (profile?.full_name ?? user.email ?? '?')[0].toUpperCase()
 
   return (
-    <div className="p-8 max-w-2xl">
+    <div className="p-4 md:p-8 max-w-2xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold" style={{ color: 'var(--fg)' }}>Perfil</h1>
       </div>
 
       <div className="space-y-8">
         <div className="rounded-lg border" style={{ borderColor: 'var(--border)', background: 'var(--bg-elev)' }}>
-          <div className="px-6 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
+          <div className="px-4 md:px-6 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
             <h2 className="text-base font-semibold" style={{ color: 'var(--fg)' }}>Avatar</h2>
           </div>
-          <div className="px-6 py-5 flex items-center gap-4">
+          <div className="px-4 md:px-6 py-5 flex items-center gap-4">
             {profile?.avatar_url ? (
               <img
                 src={profile.avatar_url}

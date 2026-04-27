@@ -42,7 +42,7 @@ export default async function Home() {
 
       {/* Nav */}
       <header
-        className="h-[52px] flex items-center px-5 gap-4 shrink-0"
+        className="h-[52px] flex items-center px-4 md:px-5 gap-4 shrink-0"
         style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}
       >
         <div className="flex items-center gap-2.5 font-mono font-semibold text-sm tracking-tight">
@@ -65,8 +65,8 @@ export default async function Home() {
       <main className="flex-1">
 
         {/* Hero */}
-        <section className="max-w-[1120px] mx-auto px-10 py-20">
-          <div className="grid gap-14 items-center" style={{ gridTemplateColumns: '1.1fr 1fr' }}>
+        <section className="max-w-[1120px] mx-auto px-5 py-12 md:px-10 md:py-20">
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-[1.1fr_1fr] md:gap-14 md:items-center">
 
             {/* Left column */}
             <div>
@@ -171,7 +171,7 @@ export default async function Home() {
                   </div>
                   <span className="ml-auto font-mono text-[11px]" style={{ color: 'var(--fg-faint)' }}>284 siguen</span>
                 </div>
-                <ul className="list-none p-0 m-0">
+                <ul className="list-none p-0 m-0 overflow-x-auto">
                   {mockEntries.map((e, i) => (
                     <li
                       key={e.id}
@@ -200,19 +200,19 @@ export default async function Home() {
 
         {/* How it works */}
         <section
-          className="max-w-[1120px] mx-auto px-10 py-[72px]"
+          className="max-w-[1120px] mx-auto px-5 py-12 md:px-10 md:py-[72px]"
           style={{ borderTop: '1px solid var(--border)' }}
         >
           <p className="font-mono text-xs mb-3 tracking-[0.02em] m-0" style={{ color: 'var(--accent)' }}>
             {'// cómo funciona'}
           </p>
           <h2
-            className="text-[32px] leading-[1.1] font-semibold mb-12 max-w-[720px]"
+            className="text-[26px] md:text-[32px] leading-[1.1] font-semibold mb-8 md:mb-12 max-w-[720px]"
             style={{ letterSpacing: '-0.025em' }}
           >
             Tres pasos. Cero fricción.
           </h2>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {steps.map(s => (
               <div
                 key={s.num}
@@ -234,7 +234,7 @@ export default async function Home() {
 
           {/* Features */}
           <div
-            className="grid grid-cols-4 gap-8 mt-16 py-12"
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-12 md:mt-16 py-12"
             style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}
           >
             {features.map(f => (
@@ -253,16 +253,16 @@ export default async function Home() {
         </section>
 
         {/* CTA */}
-        <section className="max-w-[1120px] mx-auto px-10 pt-[72px] pb-[100px]">
+        <section className="max-w-[1120px] mx-auto px-5 pt-12 pb-16 md:px-10 md:pt-[72px] md:pb-[100px]">
           <div
-            className="p-12 rounded-2xl flex items-center justify-between gap-10"
+            className="p-6 md:p-12 rounded-2xl flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-10"
             style={{
               border: '1px solid var(--border)',
               background: 'radial-gradient(circle at 85% 20%, color-mix(in oklch, var(--accent) 10%, transparent), transparent 50%), var(--bg-elev)',
             }}
           >
             <h2
-              className="text-[32px] font-semibold max-w-[520px] m-0"
+              className="text-[24px] md:text-[32px] font-semibold max-w-[520px] m-0"
               style={{ letterSpacing: '-0.025em', lineHeight: '1.15' }}
             >
               Empieza a publicar el progreso de tu proyecto.
@@ -282,7 +282,7 @@ export default async function Home() {
 
       {/* Footer */}
       <footer
-        className="max-w-[1120px] mx-auto w-full px-10 py-6 flex justify-between font-mono text-xs"
+        className="max-w-[1120px] mx-auto w-full px-5 py-4 md:px-10 md:py-6 flex justify-between font-mono text-xs"
         style={{ borderTop: '1px solid var(--border)', color: 'var(--fg-faint)' }}
       >
         <span>© 2026 patchlog</span>

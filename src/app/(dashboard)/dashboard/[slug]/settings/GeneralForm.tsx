@@ -33,10 +33,10 @@ export default function GeneralForm({ project }: Props) {
       className="rounded-lg border"
       style={{ borderColor: 'var(--border)', background: 'var(--bg-elev)' }}
     >
-      <div className="px-6 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
+      <div className="px-4 md:px-6 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
         <h2 className="text-base font-semibold" style={{ color: 'var(--fg)' }}>General</h2>
       </div>
-      <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
+      <form onSubmit={handleSubmit} className="px-4 md:px-6 py-5 space-y-5">
         <div className="space-y-1.5">
           <label htmlFor="name" className="block text-sm font-medium" style={{ color: 'var(--fg-muted)' }}>
             Nombre <span className="text-red-400">*</span>

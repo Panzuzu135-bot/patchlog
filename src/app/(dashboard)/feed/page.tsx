@@ -47,7 +47,7 @@ export default async function FeedPage() {
 
   if (followedIds.length === 0) {
     return (
-      <div className="p-8 max-w-[760px]">
+      <div className="p-4 md:p-8 max-w-[760px]">
         <p className="font-mono text-xs mb-1" style={{ color: 'var(--fg-faint)' }}>~ / feed</p>
         <h1 className="text-[28px] font-bold tracking-tight mb-2">Tu feed</h1>
         <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>
@@ -76,7 +76,7 @@ export default async function FeedPage() {
   ].filter(g => g.items.length > 0)
 
   return (
-    <div className="p-8 max-w-[760px]">
+    <div className="p-4 md:p-8 max-w-[760px]">
       <div className="mb-6">
         <p className="font-mono text-xs mb-1" style={{ color: 'var(--fg-faint)' }}>~ / feed</p>
         <h1 className="text-[28px] font-bold tracking-tight">Tu feed</h1>
