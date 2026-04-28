@@ -41,7 +41,7 @@ function CookieTable({
       <table className="w-full text-sm text-left">
         <thead>
           <tr className="border-b border-gray-700 bg-gray-800/60">
-            <th className="px-4 py-3 text-gray-200 font-medium">Nombre</th>
+            <th className="px-4 py-3 text-gray-200 font-medium">Identificador</th>
             <th className="px-4 py-3 text-gray-200 font-medium">Proveedor</th>
             <th className="px-4 py-3 text-gray-200 font-medium">Finalidad</th>
             <th className="px-4 py-3 text-gray-200 font-medium">Duración</th>
@@ -114,7 +114,7 @@ export default function CookiePolicyPage() {
 
   const essentialCookies = [
     {
-      name: "sb-*-auth-token",
+      name: "sb-[ref]-auth-token",
       provider: "Supabase",
       purpose:
         "Mantiene tu sesión iniciada de forma segura. Sin esta cookie no puedes acceder a tu cuenta.",
@@ -122,7 +122,7 @@ export default function CookiePolicyPage() {
       type: "Esencial",
     },
     {
-      name: "sb-*-auth-token-code-verifier",
+      name: "sb-[ref]-auth-token-code-verifier",
       provider: "Supabase",
       purpose:
         "Verifica el flujo seguro de inicio de sesión (PKCE). Se elimina automáticamente al completar el login.",
@@ -133,19 +133,19 @@ export default function CookiePolicyPage() {
       name: "patchlog_cookie_consent",
       provider: "Patchlog",
       purpose:
-        "Almacena tus preferencias de cookies para no volver a mostrarte el aviso en cada visita.",
-      duration: "1 año",
+        "Almacena tus preferencias de cookies en el almacenamiento local del navegador (localStorage) para no volver a mostrarte el aviso en cada visita.",
+      duration: "Hasta que limpies los datos del sitio",
       type: "Esencial",
     },
   ];
 
   const functionalCookies = [
     {
-      name: "patchlog_theme",
-      provider: "Patchlog",
+      name: "(sin almacenamiento activo)",
+      provider: "—",
       purpose:
-        "Recuerda tu preferencia de tema (claro / oscuro) para mantener la experiencia visual entre visitas.",
-      duration: "1 año",
+        "Actualmente no usamos almacenamiento funcional. Si lo hacemos en el futuro, actualizaremos esta tabla.",
+      duration: "—",
       type: "Funcional",
     },
   ];
@@ -238,6 +238,11 @@ export default function CookiePolicyPage() {
               requieren tu consentimiento porque son técnicamente necesarias.
             </p>
             <CookieTable rows={essentialCookies} />
+            <p className="text-xs text-gray-500 mt-2">
+              <code className="bg-gray-800 px-1 rounded">[ref]</code> representa
+              una referencia interna del proveedor de autenticación que varía por
+              entorno y no contiene datos personales.
+            </p>
           </div>
 
           {/* Funcionales */}
