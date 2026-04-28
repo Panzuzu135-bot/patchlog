@@ -122,6 +122,14 @@ export default function CookiePolicyPage() {
       type: "Esencial",
     },
     {
+      name: "sb-[ref]-auth-token.0, .1…",
+      provider: "Supabase",
+      purpose:
+        "Fragmentos de la cookie de sesión cuando el token supera el tamaño máximo permitido por cookie (3 KB). Solo aparecen si la sesión necesita dividirse; son equivalentes a la anterior.",
+      duration: "Sesión / 1 año",
+      type: "Esencial",
+    },
+    {
       name: "sb-[ref]-auth-token-code-verifier",
       provider: "Supabase",
       purpose:
